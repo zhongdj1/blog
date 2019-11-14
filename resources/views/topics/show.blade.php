@@ -40,7 +40,7 @@
           </div>
 
           <div class="topic-body mt-4 mb-4">
-            {!! $topic->content !!}
+            {!! $topic->body !!}
           </div>
 
           <div class="operate">
