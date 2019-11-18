@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
-    use MustVerifyEmail, Traits\ActiveUserHelper;
+    use MustVerifyEmail, Traits\ActiveUserHelper, Traits\LastActivedAtHelper;
 
     use Notifiable {
         notify as protected laravelNotify;

@@ -15,10 +15,16 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
+        // 修正代理服务器后的服务器参数
         \App\Http\Middleware\TrustProxies::class,
+        // 检测是否应用是否进入『维护模式』
+        // 见：https://learnku.com/docs/laravel/5.7/configuration#maintenance-mode
         \App\Http\Middleware\CheckForMaintenanceMode::class,
+        // 检测表单请求的数据是否过大
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        // 对提交的请求参数进行 PHP 函数 `trim()` 处理
         \App\Http\Middleware\TrimStrings::class,
+        // 将提交请求参数中空子串转换为 null
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
@@ -27,9 +33,14 @@ class Kernel extends HttpKernel
      *
      * @var array
      */
+
     protected $middlewareGroups = [
+        // Web 中间件组，应用于 routes/web.php 路由文件，
+        // 在 RouteServiceProvider 中设定
         'web' => [
+            // Cookie 加密解密
             \App\Http\Middleware\EncryptCookies::class,
+            // 将 Cookie 添加到响应中
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
@@ -37,6 +48,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             EnsureEmailIsVerified::class,
+            // 记录用户最后活跃时间
+            \App\Http\Middleware\RecordLastActivedTime::class,
         ],
 
         'api' => [
