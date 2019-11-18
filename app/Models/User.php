@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
+    use Traits\ActiveUserHelper;
     use MustVerifyEmail;
 
     use Notifiable {
