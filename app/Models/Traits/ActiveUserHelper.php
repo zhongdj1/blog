@@ -3,40 +3,32 @@
 
 namespace App\Models\Traits;
 
-
-use App\Models\Reply;
 use App\Models\Topic;
+use App\Models\Reply;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
+use Cache;
+use Arr;
 
 trait ActiveUserHelper
 {
-    // 存放用户数据
+    // 用于存放临时用户数据
     protected $users = [];
 
     // 配置信息
-    protected $topic_weight;
-    protected $reply_weight;
-    protected $pass_days; // 多少天内发表过内容
-    protected $user_number;
+    protected $topic_weight = 4; // 话题权重
+    protected $reply_weight = 1; // 回复权重
+    protected $pass_days = 7;    // 多少天内发表过内容
+    protected $user_number = 6; // 取出来多少用户
 
     // 缓存相关配置
-    protected $cache_key;
-    protected $cache_expire_in_seconds;
-
-    public function __construct()
-    {
-        $this->topic_weight = config('active-user.topic_weight');
-        $this->reply_weight = config('active-user.reply_weight');
-        $this->pass_days = config('active-user.pass_days');
-        $this->user_number = config('active-user.user_number');
-        $this->cache_key = config('active-user.cache_key');
-        $this->cache_expire_in_seconds = config('active-user.cache_expire_in_seconds');
-    }
+    protected $cache_key = 'larabbs_active_users';
+    protected $cache_expire_in_seconds = 65 * 60;
 
     public function getActiveUsers()
     {
-        return \Cache::remember($this->cache_key, $this->cache_expire_in_seconds, function () {
+        // 尝试从缓存中取出 cache_key 对应的数据。如果能取到，便直接返回数据。
+        // 否则运行匿名函数中的代码来取出活跃用户数据，返回的同时做了缓存。
+        return Cache::remember($this->cache_key, $this->cache_expire_in_seconds, function () {
             return $this->calculateActiveUsers();
         });
     }
@@ -106,6 +98,6 @@ trait ActiveUserHelper
     // 缓存活跃用户
     private function cacheActiveUsers($active_users)
     {
-        \Cache::put($this->cache_key, $active_users, $this->cache_expire_in_seconds);
+        Cache::put($this->cache_key, $active_users, $this->cache_expire_in_seconds);
     }
 }
